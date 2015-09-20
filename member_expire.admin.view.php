@@ -20,7 +20,7 @@
 class Member_ExpireAdminView extends Member_Expire
 {
 	/**
-	 * 모듈 설정 화면을 표시하는 메소드.l
+	 * 모듈 설정 화면을 표시하는 메소드.
 	 */
 	public function dispMember_ExpireAdminConfig()
 	{
@@ -30,7 +30,14 @@ class Member_ExpireAdminView extends Member_Expire
 		// 템플릿을 지정한다.
 		Context::setBrowserTitle('휴면계정 기본 설정 - XE Admin');
 		$this->setTemplatePath($this->module_path.'tpl');
-		$this->setTemplateFile('config');
+		if(version_compare(__XE_VERSION__, '1.7.0', '>='))
+		{
+			$this->setTemplateFile('config');
+		}
+		else
+		{
+			$this->setTemplateFile('config15');
+		}
 	}
 	
 	/**
@@ -53,7 +60,14 @@ class Member_ExpireAdminView extends Member_Expire
 		// 템플릿을 지정한다.
 		Context::setBrowserTitle('휴면계정 일괄 정리 - XE Admin');
 		$this->setTemplatePath($this->module_path.'tpl');
-		$this->setTemplateFile('cleanup');
+		if(version_compare(__XE_VERSION__, '1.7.0', '>='))
+		{
+			$this->setTemplateFile('cleanup');
+		}
+		else
+		{
+			$this->setTemplateFile('cleanup15');
+		}
 	}
 	
 	/**
@@ -82,9 +96,15 @@ class Member_ExpireAdminView extends Member_Expire
 		// 템플릿을 지정한다.
 		Context::setBrowserTitle('안내메일 일괄 발송 - XE Admin');
 		$this->setTemplatePath($this->module_path.'tpl');
-		$this->setTemplateFile('email_send');
+		if(version_compare(__XE_VERSION__, '1.7.0', '>='))
+		{
+			$this->setTemplateFile('email_send');
+		}
+		else
+		{
+			$this->setTemplateFile('email_send15');
+		}
 	}
-	
 	/**
 	 * 안내메일 내용 편집 화면을 표시하는 메소드.
 	 */
@@ -114,7 +134,14 @@ class Member_ExpireAdminView extends Member_Expire
 		// 템플릿을 지정한다.
 		Context::setBrowserTitle('안내메일 내용 편집 - XE Admin');
 		$this->setTemplatePath($this->module_path.'tpl');
-		$this->setTemplateFile('email_template');
+		if(version_compare(__XE_VERSION__, '1.7.0', '>='))
+		{
+			$this->setTemplateFile('email_template');
+		}
+		else
+		{
+			$this->setTemplateFile('email_template15');
+		}
 	}
 	
 	/**
@@ -164,7 +191,14 @@ class Member_ExpireAdminView extends Member_Expire
 		// 템플릿을 지정한다.
 		Context::setBrowserTitle('안내메일 발송 내역 - XE Admin');
 		$this->setTemplatePath($this->module_path.'tpl');
-		$this->setTemplateFile('email_list');
+		if(version_compare(__XE_VERSION__, '1.7.0', '>='))
+		{
+			$this->setTemplateFile('email_list');
+		}
+		else
+		{
+			$this->setTemplateFile('email_list15');
+		}
 	}
 	
 	/**
@@ -216,7 +250,14 @@ class Member_ExpireAdminView extends Member_Expire
 		// 템플릿을 지정한다.
 		Context::setBrowserTitle('정리대상 회원 목록 - XE Admin');
 		$this->setTemplatePath($this->module_path.'tpl');
-		$this->setTemplateFile('list_targets');
+		if(version_compare(__XE_VERSION__, '1.7.0', '>='))
+		{
+			$this->setTemplateFile('list_targets');
+		}
+		else
+		{
+			$this->setTemplateFile('list_targets15');
+		}
 	}
 	
 	/**
@@ -267,6 +308,70 @@ class Member_ExpireAdminView extends Member_Expire
 		// 템플릿을 지정한다.
 		Context::setBrowserTitle('별도저장 회원 목록 - XE Admin');
 		$this->setTemplatePath($this->module_path.'tpl');
-		$this->setTemplateFile('list_moved');
+		if(version_compare(__XE_VERSION__, '1.7.0', '>='))
+		{
+			$this->setTemplateFile('list_moved');
+		}
+		else
+		{
+			$this->setTemplateFile('list_moved15');
+		}
+	}
+	
+	/**
+	 * 예외 목록 화면을 표시하는 메소드.
+	 */
+	public function dispMember_ExpireAdminListExceptions()
+	{
+		// 현재 설정을 불러온다.
+		$config = $this->getConfig();
+		Context::set('mex_config', $config);
+		
+		// 검색 조건을 불러온다.
+		$search_target = Context::get('search_target');
+		$search_keyword = Context::get('search_keyword');
+		if (!in_array($search_target, array('email_address', 'user_id', 'user_name', 'nick_name')) || !$search_keyword)
+		{
+			Context::set('search_target', $search_target = null);
+			Context::set('search_keyword', $search_keyword = null);
+		}
+		$valid_list_counts = array(10, 20, 30, 50, 100, 200, 300);
+		$list_count = intval(Context::get('list_count'));
+		if (!in_array($list_count, $valid_list_counts)) $list_count = 10;
+		Context::set('list_count', $list_count);
+		
+		// 발송 내역을 불러온다.
+		$obj = new stdClass();
+		if ($search_target && $search_keyword) $obj->$search_target = trim($search_keyword);
+		$exception_count = executeQuery('member_expire.countExceptions', $obj);
+		$exception_count = $exception_count->toBool() ? $exception_count->data->count : 0;
+		$obj->list_count = $list_count;
+		$obj->page = $page = Context::get('page') ? Context::get('page') : 1;
+		$obj->orderby = 'desc';
+		$exceptions = executeQuery('member_expire.getExceptions', $obj);
+		$exceptions = $exceptions->toBool() ? $exceptions->data : array();
+		Context::set('exception_count', $exception_count);
+		Context::set('exceptions', $exceptions);
+		
+		// 페이징을 처리한다.
+		$paging = new Object();
+		$paging->total_count = $exception_count;
+		$paging->total_page = max(1, ceil($exception_count / $list_count));
+		$paging->page = $page;
+		$paging->page_navigation = new PageHandler($paging->total_count, $paging->total_page, $page, $list_count);
+		Context::set('paging', $paging);
+		Context::set('page', $page);
+		
+		// 템플릿을 지정한다.
+		Context::setBrowserTitle('예외 목록 - XE Admin');
+		$this->setTemplatePath($this->module_path.'tpl');
+		if(version_compare(__XE_VERSION__, '1.7.0', '>='))
+		{
+			$this->setTemplateFile('exceptions');
+		}
+		else
+		{
+			$this->setTemplateFile('exceptions15');
+		}
 	}
 }

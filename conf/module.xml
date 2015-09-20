@@ -3,20 +3,23 @@
 	<grants />
 	<permissions />
 	<actions>
-		<action name="dispMember_expireAdminConfig" type="view" admin_index="true" menu_name="member_expire" />
-		<action name="dispMember_expireAdminCleanup" type="view" />
-		<action name="dispMember_expireAdminEmailSend" type="view" />
-		<action name="dispMember_expireAdminEmailTemplate" type="view" />
-		<action name="dispMember_expireAdminEmailList" type="view" />
-		<action name="dispMember_expireAdminListTargets" type="view" />
-		<action name="dispMember_expireAdminListMoved" type="view" />
-		<action name="procMember_expireAdminInsertConfig" type="controller" />
-		<action name="procMember_expireAdminInsertEmailTemplate" type="controller" />
-		<action name="procMember_expireAdminClearSentEmail" type="controller" />
-		<action name="procMember_expireAdminDoSendEmail" type="controller" />
-		<action name="procMember_expireAdminDoCleanup" type="controller" />
-		<action name="procMember_expireAdminRestoreMember" type="controller" />
-		<action name="procMember_expireAdminDeleteMember" type="controller" />
+		<action name="dispMember_expireAdminConfig" type="view" standalone="true" admin_index="true" menu_name="member_expire" />
+		<action name="dispMember_expireAdminCleanup" type="view" standalone="true" />
+		<action name="dispMember_expireAdminEmailSend" type="view" standalone="true" />
+		<action name="dispMember_expireAdminEmailTemplate" type="view" standalone="true" />
+		<action name="dispMember_expireAdminEmailList" type="view" standalone="true" />
+		<action name="dispMember_expireAdminListTargets" type="view" standalone="true" />
+		<action name="dispMember_expireAdminListMoved" type="view" standalone="true" />
+		<action name="dispMember_expireAdminListExceptions" type="view" standalone="true" />
+		<action name="procMember_expireAdminInsertConfig" type="controller" standalone="true" />
+		<action name="procMember_expireAdminInsertEmailTemplate" type="controller" standalone="true" />
+		<action name="procMember_expireAdminClearSentEmail" type="controller" standalone="true" />
+		<action name="procMember_expireAdminDoSendEmail" type="controller" standalone="true" />
+		<action name="procMember_expireAdminDoCleanup" type="controller" standalone="true" />
+		<action name="procMember_expireAdminRestoreMember" type="controller" standalone="true" />
+		<action name="procMember_expireAdminDeleteMember" type="controller" standalone="true" />
+		<action name="procMember_expireAdminInsertException" type="controller" standalone="true" />
+		<action name="procMember_expireAdminDeleteException" type="controller" standalone="true" />
 	</actions>
 	<menus>
 		<menu name="member_expire" type="all">
