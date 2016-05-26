@@ -36,8 +36,10 @@
 	<label for="notice_agree"><input id="notice_agree" type="checkbox" data-nocheck="동의하지 않으면 진행할 수 없습니다." /> 위의 내용을 읽고 숙지하였으며, 진행에 동의합니다.</label>
 </p>
 
-<div class="btnArea x_clearfix" id="cleanup_button_area">
-	<button id="start_cleanup" type="button" class="x_btn x_btn-primary x_pull-right">정리 시작</button>
+<div class="btnArea x_clearfix" id="cleanup_button_area" style="padding-top:10px; border-top:1px solid #CCC;">
+	<span class="btn medium">
+		<button id="start_cleanup" type="submit" class="x_btn x_btn-primary x_pull-right">정리 시작</button>
+	</span>
 </div>
 
 <div id="cleanup_progress_area" data-threshold="{$mex_config->expire_threshold}" data-method="{$mex_config->expire_method}" data-count="{$expired_members_count}">

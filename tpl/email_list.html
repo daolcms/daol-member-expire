@@ -1,5 +1,6 @@
 <include target="./header.html" />
 <load target="css/config.css" />
+<load target="css/config15.css" />
 <load target="js/config.js" />
 
 <div class="x_clearfix">
@@ -24,57 +25,91 @@
 		</select>
 	</div>
 </div>
-
-<table id="member_expire_log" class="x_table x_table-striped x_table-hover">
-	<thead>
-		<tr>
-			<th scope="col" class="nowr">이메일</th>
-			<th scope="col" class="nowr">아이디</th>
-			<th scope="col" class="nowr">이름</th>
-			<th scope="col" class="nowr">닉네임</th>
-			<th scope="col" class="nowr">최근 로그인</th>
-			<th scope="col" class="nowr">정리 예정일</th>
-			<th scope="col" class="nowr">안내메일 발송일</th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr loop="$sent_emails => $sent_email">
-			<td class="nowr">
-				{getEncodeEmailAddress($sent_email->email_address)}
-			</td>
-			<td class="nowr">{$sent_email->user_id}</td>
-			<td class="nowr">{$sent_email->user_name}</td>
-			<td class="nowr">{$sent_email->nick_name}</td>
-			<td class="nowr">
-				<!--@if($sent_email->last_login)-->
-					{zdate($sent_email->last_login, 'Y-m-d')}
-				<!--@else-->
-					<span class="graytext">로그인 기록 없음</span>
-				<!--@endif-->
-			</td>
-			<td clas="nowr">
-				{zdate($sent_email->expire_date, 'Y-m-d')}
-			</td>
-			<td clas="nowr">
-				{zdate($sent_email->notified_date, 'Y-m-d H:i:s')}
-			</td>
-		</tr>
-		<tr cond="!$sent_emails">
-			<td>발송된 메일이 없습니다.</td>
-		</tr>
-	</tbody>
-</table>
+<div class="table even">
+	<table id="member_expire_log" border="1" cellspacing="0" width="100%">
+		<thead>
+			<tr>
+				<th scope="col" class="nowr">이메일</th>
+				<th scope="col" class="nowr">아이디</th>
+				<th scope="col" class="nowr">이름</th>
+				<th scope="col" class="nowr">닉네임</th>
+				<th scope="col" class="nowr">소속 그룹</th>
+				<th scope="col" class="nowr">최근 로그인</th>
+				<th scope="col" class="nowr">정리 예정일</th>
+				<th scope="col" class="nowr">안내메일 발송일</th>
+			</tr>
+		</thead>
+		<tfoot>
+			<tr>
+				<th scope="col" class="nowr">이메일</th>
+				<th scope="col" class="nowr">아이디</th>
+				<th scope="col" class="nowr">이름</th>
+				<th scope="col" class="nowr">닉네임</th>
+				<th scope="col" class="nowr">소속 그룹</th>
+				<th scope="col" class="nowr">최근 로그인</th>
+				<th scope="col" class="nowr">정리 예정일</th>
+				<th scope="col" class="nowr">안내메일 발송일</th>
+			</tr>
+		</tfoot>
+		<tbody>
+			<tr loop="$sent_emails => $sent_email">
+				<td class="nowr">
+					{getEncodeEmailAddress($sent_email->email_address)}
+				</td>
+				<td class="nowr">{$sent_email->user_id}</td>
+				<td class="nowr">{$sent_email->user_name}</td>
+				<td class="nowr">{$sent_email->nick_name}</td>
+				<td class="nowr">{implode(', ', $sent_emails_groups[$sent_email->member_srl])}</td>
+				<td class="nowr">
+					<!--@if($sent_email->last_login)-->
+						{zdate($sent_email->last_login, 'Y-m-d')}
+					<!--@else-->
+						<span class="graytext">로그인 기록 없음</span>
+					<!--@endif-->
+				</td>
+				<td clas="nowr">
+					{zdate($sent_email->expire_date, 'Y-m-d')}
+				</td>
+				<td clas="nowr">
+					{zdate($sent_email->notified_date, 'Y-m-d H:i:s')}
+				</td>
+			</tr>
+			<tr cond="!$sent_emails">
+				<td>발송된 메일이 없습니다.</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
 
 <div class="x_clearfix">
-	<form class="x_pagination x_pull-left" style="margin-top:8px" action="{Context::getUrl('')}" method="post" no-error-return-url="true">
-		<input loop="$param => $key, $val" cond="!in_array($key, array('mid', 'vid', 'act'))" type="hidden" name="{$key}" value="{$val}" />
-		<ul>
-			<li class="x_disabled"|cond="$page == 1"><a href="{getUrl('page', '')}">&laquo; {$lang->first_page}</a></li>
-			<!--@while($page_no = $paging->page_navigation->getNextPage())-->
-				<li class="x_active"|cond="$page_no == $page"><a href="{getUrl('page', $page_no)}">{$page_no}</a></li>
-			<!--@end-->
-			<li class="x_disabled"|cond="$page == $paging->page_navigation->last_page"><a href="{getUrl('page', $paging->page_navigation->last_page)}">{$lang->last_page} &raquo;</a></li>
-		</ul>
+	<form action="./" class="pagination" style="float:left; margin:0;">
+		<input type="hidden" name="error_return_url" value="" />
+		<input type="hidden" name="module" value="{$module}" />
+		<input type="hidden" name="act" value="{$act}" />
+		<input cond="$search_keyword" type="hidden" name="search_keyword" value="{$search_keyword}" />
+		<input cond="$search_target" type="hidden" name="search_target" value="{$search_target}" />
+
+		<a href="{getUrl('page', '')}" class="direction">&laquo; {$lang->first_page}</a>
+		<block cond="$page_navigation->first_page + $page_navigation->page_count > $page_navigation->last_page && $page_navigation->page_count != $page_navigation->total_page">
+			{@$isGoTo = true}
+			<a href="{getUrl('page', '')}">1</a>
+			<a href="#goTo" class="tgAnchor" title="{$lang->cmd_go_to_page}">...</a>
+		</block>
+		<!--@while($page_no = $paging->page_navigation->getNextPage())-->
+			{@$last_page = $page_no}
+			<strong cond="$page_no == $page">{$page_no}</strong>
+			<a cond="$page_no != $page" href="{getUrl('page', $page_no)}">{$page_no}</a>
+		<!--@end-->
+		<block cond="$last_page != $page_navigation->last_page">
+			{@$isGoTo = true}
+			<a href="#goTo" class="tgAnchor" title="{$lang->cmd_go_to_page}">...</a>
+			<a href="{getUrl('page', $page_navigation->last_page)}">{$page_navigation->last_page}</a>
+		</block>
+		<a href="{getUrl('page', $page_navigation->last_page)}" class="direction">{$lang->last_page} &raquo;</a>
+		<span cond="$isGoTo" id="goTo" class="tgContent">
+			<input name="page" title="{$lang->cmd_go_to_page}" />
+			<button type="submit">Go</button>
+		</span>
 	</form>
 	<form class="x_pull-right x_input-append" style="margin-top:8px" action="{Context::getUrl('')}" method="get" no-error-return-url="true">
 		<input type="hidden" name="module" value="{$module}" />
@@ -89,6 +124,7 @@
 		<button class="x_btn x_btn-inverse" type="submit">{$lang->cmd_search}</button>
 	</form>
 </div>
+
 <div class="x_clearfix">
 	<form class="x_pull-right x_input-append" style="margin-top:8px" action="{Context::getUrl('')}" method="post">
 		<input type="hidden" name="module" value="admin" />

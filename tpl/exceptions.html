@@ -1,5 +1,5 @@
 <include target="./header.html" />
-<load target="css/config.css" />
+<load target="css/config15.css" />
 <load target="js/config.js" />
 
 <div class="x_clearfix">
@@ -23,61 +23,84 @@
 	</div>
 </div>
 
-<table id="member_expire_log" class="x_table x_table-striped x_table-hover">
-	<thead>
-		<tr>
-			<th scope="col" class="nowr">이메일</th>
-			<th scope="col" class="nowr">아이디</th>
-			<th scope="col" class="nowr">이름</th>
-			<th scope="col" class="nowr">닉네임</th>
-			<th scope="col" class="nowr">가입일</th>
-			<th scope="col" class="nowr">최근 로그인</th>
-			<th scope="col" class="nowr">정리</th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr loop="$exceptions => $member">
-			<td class="nowr">
-				<a href="#popup_menu_area" class="member_{$member->member_srl}" title="Info">{getEncodeEmailAddress($member->email_address)}</a>
-			</td>
-			<td class="nowr">{$member->user_id}</td>
-			<td class="nowr">{$member->user_name}</td>
-			<td class="nowr">{$member->nick_name}</td>
-			<td class="nowr">
-				<!--@if($member->regdate)-->
-					{zdate($member->regdate, 'Y-m-d')}
-				<!--@else-->
-					<span class="graytext">가입 기록 없음</span>
-				<!--@endif-->
-			</td>
-			<td class="nowr">
-				<!--@if($member->last_login)-->
-					{zdate($member->last_login, 'Y-m-d')}&nbsp;
-					({round((time() - ztime($member->last_login)) / 86400)}일 전)
-				<!--@else-->
-					<span class="graytext">로그인 기록 없음</span>
-				<!--@endif-->
-			</td>
-			<td clas="nowr">
-				<a href="#{$member->member_srl}" id="do_remove_exception_{$member->member_srl}" class="do_remove_exception" data-member-srl="{$member->member_srl}">예외 해제</a>
-			</td>
-		</tr>
-		<tr cond="!$exceptions">
-			<td>해당되는 회원이 없습니다.</td>
-		</tr>
-	</tbody>
-</table>
+<div class="table even">
+	<table id="member_expire_log" border="1" cellspacing="0" width="100%">
+		<thead>
+			<tr>
+				<th scope="col" class="nowr">이메일</th>
+				<th scope="col" class="nowr">아이디</th>
+				<th scope="col" class="nowr">이름</th>
+				<th scope="col" class="nowr">닉네임</th>
+				<th scope="col" class="nowr">소속 그룹</th>
+				<th scope="col" class="nowr">가입일</th>
+				<th scope="col" class="nowr">최근 로그인</th>
+				<th scope="col" class="nowr">정리</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr loop="$exceptions => $member">
+				<td class="nowr">
+					<a href="#popup_menu_area" class="member_{$member->member_srl}" title="Info">{getEncodeEmailAddress($member->email_address)}</a>
+				</td>
+				<td class="nowr">{$member->user_id}</td>
+				<td class="nowr">{$member->user_name}</td>
+				<td class="nowr">{$member->nick_name}</td>
+				<td class="nowr">{implode(', ', $exceptions_groups[$member->member_srl])}</td>
+				<td class="nowr">
+					<!--@if($member->regdate)-->
+						{zdate($member->regdate, 'Y-m-d')}
+					<!--@else-->
+						<span class="graytext">가입 기록 없음</span>
+					<!--@endif-->
+				</td>
+				<td class="nowr">
+					<!--@if($member->last_login)-->
+						{zdate($member->last_login, 'Y-m-d')}&nbsp;
+						({round((time() - ztime($member->last_login)) / 86400)}일 전)
+					<!--@else-->
+						<span class="graytext">로그인 기록 없음</span>
+					<!--@endif-->
+				</td>
+				<td clas="nowr">
+					<a href="#{$member->member_srl}" id="do_remove_exception_{$member->member_srl}" class="do_remove_exception" data-member-srl="{$member->member_srl}">예외 해제</a>
+				</td>
+			</tr>
+			<tr cond="!$exceptions">
+				<td>해당되는 회원이 없습니다.</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
 
 <div class="x_clearfix">
-	<form class="x_pagination x_pull-left" style="margin-top:8px" action="{Context::getUrl('')}" method="post" no-error-return-url="true">
-		<input loop="$param => $key, $val" cond="!in_array($key, array('mid', 'vid', 'act'))" type="hidden" name="{$key}" value="{$val}" />
-		<ul>
-			<li class="x_disabled"|cond="$page == 1"><a href="{getUrl('page', '')}">&laquo; {$lang->first_page}</a></li>
-			<!--@while($page_no = $paging->page_navigation->getNextPage())-->
-				<li class="x_active"|cond="$page_no == $page"><a href="{getUrl('page', $page_no)}">{$page_no}</a></li>
-			<!--@end-->
-			<li class="x_disabled"|cond="$page == $paging->page_navigation->last_page"><a href="{getUrl('page', $paging->page_navigation->last_page)}">{$lang->last_page} &raquo;</a></li>
-		</ul>
+	<form action="./" class="pagination" style="float:left; margin:0;">
+		<input type="hidden" name="error_return_url" value="" />
+		<input type="hidden" name="module" value="{$module}" />
+		<input type="hidden" name="act" value="{$act}" />
+		<input cond="$search_keyword" type="hidden" name="search_keyword" value="{$search_keyword}" />
+		<input cond="$search_target" type="hidden" name="search_target" value="{$search_target}" />
+
+		<a href="{getUrl('page', '')}" class="direction">&laquo; {$lang->first_page}</a>
+		<block cond="$page_navigation->first_page + $page_navigation->page_count > $page_navigation->last_page && $page_navigation->page_count != $page_navigation->total_page">
+			{@$isGoTo = true}
+			<a href="{getUrl('page', '')}">1</a>
+			<a href="#goTo" class="tgAnchor" title="{$lang->cmd_go_to_page}">...</a>
+		</block>
+		<!--@while($page_no = $paging->page_navigation->getNextPage())-->
+			{@$last_page = $page_no}
+			<strong cond="$page_no == $page">{$page_no}</strong>
+			<a cond="$page_no != $page" href="{getUrl('page', $page_no)}">{$page_no}</a>
+		<!--@end-->
+		<block cond="$last_page != $page_navigation->last_page">
+			{@$isGoTo = true}
+			<a href="#goTo" class="tgAnchor" title="{$lang->cmd_go_to_page}">...</a>
+			<a href="{getUrl('page', $page_navigation->last_page)}">{$page_navigation->last_page}</a>
+		</block>
+		<a href="{getUrl('page', $page_navigation->last_page)}" class="direction">{$lang->last_page} &raquo;</a>
+		<span cond="$isGoTo" id="goTo" class="tgContent">
+			<input name="page" title="{$lang->cmd_go_to_page}" />
+			<button type="submit">Go</button>
+		</span>
 	</form>
 	<form class="x_pull-right x_input-append" style="margin-top:8px" action="{Context::getUrl('')}" method="get" no-error-return-url="true">
 		<input type="hidden" name="module" value="{$module}" />
@@ -97,9 +120,9 @@
 	<input type="hidden" name="module" value="{$module}" />
 	<input type="hidden" name="act" value="procMember_expireAdminInsertException" />
 	<section class="section">
-		<h2>예외 추가</h2>
+		<h2 style="border-bottom:1px dotted #CCC;">예외 추가</h2>
 		<p>
-			<input type="text" name="exc_keyword" value="" style="width: 200px;position:relative;top:5px">
+			<input type="text" name="exc_keyword" value="" style="width: 200px;position:relative;">
 			<button class="x_btn" type="submit">등록</button>
 		</p>
 		<p class="x_help-block">예외로 등록할 회원의 member_srl, 아이디, 메일 주소, 이름, 닉네임 중 하나를 입력해 주십시오.</p>
