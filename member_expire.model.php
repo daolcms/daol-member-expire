@@ -236,6 +236,7 @@ class Member_ExpireModel extends Member_Expire
 		$this->oMemberController->procMemberDeleteImageMark($member_srl);
 		$this->oMemberController->procMemberDeleteProfileImage($member_srl);
 		$this->oMemberController->delSignature($member_srl);
+		$this->oMemberController->_clearMemberCache($member_srl);
 		
 		// 트랜잭션을 커밋한다.
 		if ($use_transaction)
@@ -416,6 +417,10 @@ class Member_ExpireModel extends Member_Expire
 				$this->oSites = array(0);
 			}
 		}
+		if (!in_array(0, $this->oSites))
+		{
+			$this->oSites[] = 0;
+		}
 		
 		// 회원정보 캐시를 비운다.
 		$cache_path = getNumberingPath($member_srl) . $member_srl;
@@ -433,6 +438,8 @@ class Member_ExpireModel extends Member_Expire
 			foreach ($this->oSites as $site_srl)
 			{
 				$cache_key = $oCacheHandler->getGroupKey('member', 'member_groups:' . $cache_path . '_' . $site_srl);
+				$oCacheHandler->delete($cache_key);
+				$cache_key = $oCacheHandler->getGroupKey('member', 'member_groups:' . $cache_path . ':site:' . $site_srl);
 				$oCacheHandler->delete($cache_key);
 			}
 		}
