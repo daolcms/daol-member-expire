@@ -29,9 +29,10 @@ class Member_ExpireModel extends Member_Expire
 	/**
 	 * 처음 생성하면 DB 오브젝트와 member 컨트롤러를 로딩한다.
 	 */
-	public function __construct()
+	public function __construct($error = 0, $message = 'success')
 	{
 		$this->oDB = DB::getInstance();
+		parent::__construct();
 	}
 	
 	/**
@@ -123,7 +124,11 @@ class Member_ExpireModel extends Member_Expire
 		$oMail->setContent($content);
 		$oMail->setSender($sender_name, $sender_email);
 		$oMail->setReceiptor($recipient_name, $member->email_address);
-		$oMail->send();
+		$result = $oMail->send();
+		if ($result === false)
+		{
+			return -49;
+		}
 		
 		// 트랜잭션을 시작한다.
 		if ($use_transaction)

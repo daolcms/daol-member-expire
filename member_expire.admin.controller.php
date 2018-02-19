@@ -50,7 +50,7 @@ class Member_ExpireAdminController extends Member_Expire
 		if ($new_config->email_threshold)
 		{
 			$obj = new stdClass();
-			$obj->threshold = date('YmdHis', time() - ($config->expire_threshold * 86400) + ($new_config->email_threshold * 86400) + zgap());
+			$obj->threshold = date('YmdHis', time() - ($new_config->expire_threshold * 86400) + ($new_config->email_threshold * 86400) + zgap());
 			$unnotified_members_count = executeQuery('member_expire.countUnnotifiedMembers', $obj);
 			$unnotified_members_count = $unnotified_members_count->toBool() ? $unnotified_members_count->data->count : 0;
 			if ($unnotified_members_count > 50)
@@ -194,7 +194,7 @@ class Member_ExpireAdminController extends Member_Expire
 			$result = $oModel->sendEmail($member, $config, $resend, false);
 			if ($result < 0)
 			{
-				$oDB->rollback(); $this->add('count', $result); return;
+				$oDB->commit(); $this->add('count', $result); return;
 			}
 			$done_count++;
 		}
