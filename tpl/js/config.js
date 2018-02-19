@@ -128,14 +128,14 @@
 			};
 			ajax_callback();
 		});
-
+		
 		/**
 		 * 안내메일 일괄 발송 기준 날짜 변경.
 		 */
 		$("#extra_days").on("change", function() {
 			window.location.href = window.location.href.setQuery("extra_days", $(this).val());
 		});
-
+		
 		/**
 		 * 안내메일 미리보기 작성.
 		 */
@@ -252,6 +252,30 @@
 				},
 				function(response) {
 					alert("삭제에 실패했습니다.");
+				}
+			);
+		});
+		
+		/**
+		 * 별도의 저장공간으로 이동된 회원 중 현재 화면에 표시되는 화원들을 일괄 삭제한다.
+		 */
+		$("#delete_moved_on_this_page").click(function(event) {
+			event.preventDefault();
+			var member_srls = [];
+			$("a.do_delete_member").each(function() {
+				member_srls.push($(this).data("member-srl"));
+			});
+			if (!member_srls.length) return;
+			$.exec_json(
+				"member_expire.procMember_expireAdminDeleteMember", {
+					"member_srls": member_srls,
+					"call_triggers": "Y"
+				},
+				function(response) {
+					window.location.reload();
+				},
+				function(response) {
+					alert("일괄 삭제에 실패했습니다.");
 				}
 			);
 		});
